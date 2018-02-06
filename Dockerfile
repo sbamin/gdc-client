@@ -4,7 +4,7 @@
 
 # Based on Ubuntu 14.04 x64 binary
 # Source: https://gdc.cancer.gov/access-data/gdc-data-transfer-tool
-FROM	ubuntu:14.04
+FROM	ubuntu:16.04
 ## For questions, visit https:
 MAINTAINER "Samir B. Amin" <tweet:sbamin; sbamin.com/contact>
 
@@ -14,13 +14,14 @@ LABEL version="1.3.0" \
 	contact="https://github.com/sbamin/gdc-client"
 
 RUN	umask 0022 && apt-get update && \
-	apt-get install -y wget zip unzip && \
-	mkdir -p /opt/bin && \
-	chmod 755 /opt/bin && \
-	cd /opt/bin
+	apt-get install -y wget zip unzip rsync sudo
 
-RUN wget https://gdc.cancer.gov/system/files/authenticated%20user/0/gdc-client_v1.3.0_Ubuntu14.04_x64.zip && \
+RUN mkdir -p /opt/bin && \
+	chmod 755 /opt/bin && \
+	cd /opt/bin && \
+	wget https://gdc.cancer.gov/system/files/authenticated%20user/0/gdc-client_v1.3.0_Ubuntu14.04_x64.zip && \
 	unzip gdc-client_v1.3.0_Ubuntu14.04_x64.zip && \
+	chmod 755 gdc-client && \
 	rm -f gdc-client_v1.3.0_Ubuntu14.04_x64.zip
 
 ####### Setup non-root docker env #######
@@ -57,6 +58,7 @@ ENV PATH=/opt/bin:/home/foo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bi
 
 ## startup helper script
 ENTRYPOINT ["/opt/bin/startup"]
+CMD ["gdc-client", "-h"]
 
 ## download manpage
 # docker run sbamin/gdc-client download --help

@@ -21,9 +21,11 @@ docker run sbamin/gdc-client upload --help
 *   download and keep GDC manifest file for `open` access files in the shared directory.
 
 ```
-cd /mnt/scratch
+export USERMOUNT="/fastscratch/amins/dump/gdc/test"
 
-docker run -d -v /mnt/scratch:/scratch sbamin/gdc-client download -v -n 4 -m open_manifest.tsv
+cd "${USERMOUNT}"
+
+docker run -e HOSTUSER=$USER -e HOSTGROUP=verhaak-lab -e HOSTUSERID=$UID -e HOSTGROUPID=13576 -v "${USERMOUNT}":/scratch sbamin/gdc-client:1.3.5 "gdc-client 'download -v -n 4 -t gdc_token.key -m gdc_lgg_wxs_bams.txt'"
 ```
 
 >Here, we run docker in daemon mode, mount `/mnt/scratch` (supply full path and not relative) directory on the host machine to `/scratch` location within docker container. Then we start, `gdc-client download` with 4 threads and fetch data from the downloaded manifest. `-v` is for verbose mode to track download progress (see below).

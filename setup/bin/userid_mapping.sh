@@ -34,7 +34,7 @@ if [[ "$HOSTUSERID" -ne 1001 && "${HOSTGROUPID}" -ne 5001 ]]; then
 
 	## at the last, change shell to host HOSTUSER environment and run init script
 	## pass user supplied args at docker run command, if any
-	su -l $HOSTUSER -c /usr/local/bin/gdc-client "$@"
+	runuser -g "${HOSTGROUP}" "${HOSTUSER}" -c "$@"
 fi
 
 ## END ##
