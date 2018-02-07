@@ -1,0 +1,26 @@
+#!/bin/bash
+## startup script at docker entrypoint ##
+# 10-2017 | @sbamin
+# v 1.1.0
+#
+## default location to mount host volumne inside running container
+export MYHOSTVOL=${MYHOSTVOL:-"/scratch"}
+
+## enable user id mapping when starting docker container
+## force disable user mapping if -e USERMAPPING=DISABLE is passed at running docker run command
+USERMAPPING=${USERMAPPING:-ENABLE}
+echo "User and Group ID mapping: $USERMAPPING"
+
+if [[ "${USERMAPPING}" != "DISABLE" ]]; then
+	echo "Running userid_mapping.sh script"
+	## pass user supplied args at docker run command, if any
+	/opt/bin/userid_mapping.sh "$@"
+else
+    echo -e "\n## INFO ##\nRunning as a non-root user with limited read-write privileges to host file system\n"
+    ## source /etc/profile
+    . /etc/profile
+    ## pass user supplied commands to container
+	bash -c "$@"
+fi
+
+## END ##
