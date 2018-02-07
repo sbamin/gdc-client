@@ -2,16 +2,17 @@
 # Dockerfile for NCI gdc-client
 ################################
 
-# Based on Ubuntu 14.04 x64 binary
+# Based on Ubuntu 14.04 x64 binary for 16.04 x64 image
 # Source: https://gdc.cancer.gov/access-data/gdc-data-transfer-tool
 FROM	ubuntu:16.04
 ## For questions, visit https:
-MAINTAINER "Samir B. Amin" <tweet:sbamin; sbamin.com/contact>
+MAINTAINER "Samir B. Amin" <tweet:sbamin; https://sbamin.com/contact>
 
 LABEL version="1.3.0" \
 	mode="gdc-client-1.3.0" \	
 	description="docker image to run NCI gdc-client" \
-	contact="https://github.com/sbamin/gdc-client"
+	website="https://github.com/sbamin/gdc-client" \
+	issues="https://github.com/sbamin/gdc-client/issues"
 
 RUN	umask 0022 && apt-get update && \
 	apt-get install -y wget zip unzip rsync sudo
