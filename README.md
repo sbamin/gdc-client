@@ -1,9 +1,9 @@
 ### gdc-client docker image
 
-[![Docker Build Status](https://img.shields.io/docker/build/sbamin/gdc-client.svg)](https://hub.docker.com/r/sbamin/gdc-client/) [![GitHub release](https://img.shields.io/github/release/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0) [![GitHub release](https://img.shields.io/github/issues/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/issues) [![Website](https://img.shields.io/website/http/sbamin.github.io%2Fgdc-client%2F.svg?label=How-To)](https://sbamin.github.io/gdc-client/)
+[![Docker Build Status](https://img.shields.io/docker/build/sbamin/gdc-client.svg)](https://hub.docker.com/r/sbamin/gdc-client/) [![GitHub release](https://img.shields.io/github/release/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0_75237be) [![GitHub release](https://img.shields.io/github/issues/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/issues) [![Website](https://img.shields.io/website/http/sbamin.github.io%2Fgdc-client%2F.svg?label=How-To)](https://sbamin.github.io/gdc-client/)
 
->7-Feb-2018   
->[v1.3.0](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0)   
+>22-Apr-2018   
+>[v1.3.0_75237be](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0_75237be)   
 
 *   Source: https://github.com/sbamin/gdc-client
 *   Docker: https://hub.docker.com/r/sbamin/gdc-client
