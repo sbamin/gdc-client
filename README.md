@@ -1,6 +1,6 @@
 ### gdc-client docker image
 
-[![Docker Build Status](https://img.shields.io/docker/build/sbamin/gdc-client.svg)](https://hub.docker.com/r/sbamin/gdc-client/) [![GitHub release](https://img.shields.io/github/release/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0.b1) [![GitHub release](https://img.shields.io/github/issues/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/issues) [![Website](https://img.shields.io/website/http/sbamin.github.io%2Fgdc-client%2F.svg?label=How-To)](https://sbamin.github.io/gdc-client/)
+[![Docker Build Status](https://img.shields.io/docker/build/sbamin/gdc-client.svg)](https://hub.docker.com/r/sbamin/gdc-client/) [![GitHub release](https://img.shields.io/github/release/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0.b1) [![GitHub release](https://img.shields.io/github/issues/sbamin/gdc-client.svg)](https://github.com/sbamin/gdc-client/issues) [![Website](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=How-To)](https://sbamin.com/tools/gdc-client-docker)
 
 >22-Apr-2018   
 >[v1.3.0.b1](https://github.com/sbamin/gdc-client/releases/tag/v1.3.0.b1)   
@@ -26,7 +26,7 @@ export USERMOUNT="/mnt/myscratch"
 cd "${USERMOUNT}"
 
 ## MAKE SURE TO GIVE PROPER USER AND GROUP IDs, matching to those of host machine
-docker run -d -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGROUPID=10001 -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --log-file=download.log -n 4 -t gdc_token.key -m controlled_manifest.tsv"
+docker run -d -e HOSTUSER=$USER -e HOSTGROUP=$(id -gn $USER) -e HOSTUSERID=$UID -e HOSTGROUPID=$(id -g $USER) -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --log-file=download.log -n 4 -t gdc_token.key -m controlled_manifest.tsv"
 ```
 
 >Here, we run docker in daemon mode, mount `/mnt/myscratch` (supply full path and not relative) directory on the host machine to `/scratch` location within docker container. Then we start, `gdc-client download` with 4 threads and fetch controlled access data from the downloaded manifest using download key. For logging, `-v` does not seem to work, so using `--log-file=download.log` to save file in in mounted host volume.
@@ -44,12 +44,12 @@ docker run -d -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGRO
 
 ```sh
 ## path where data will be stored on the host machine
-export USERMOUNT="/fastscratch/amins/dump/gdc/test"
+export USERMOUNT="/fastscratch/foo/dump/gdc/test"
 
 cd "${USERMOUNT}"
 
 ## MAKE SURE TO GIVE PROPER USER AND GROUP IDs, matching to those of host machine
-docker run -d -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGROUPID=10001 -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --log-file=download.log -n 4 -m open_manifest.tsv"
+docker run -d -e HOSTUSER=$USER -e HOSTGROUP=$(id -gn $USER) -e HOSTUSERID=$UID -e HOSTGROUPID=$(id -g $USER) -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --log-file=download.log -n 4 -m open_manifest.tsv"
 ```
 
 #### To track download progress:
@@ -62,21 +62,27 @@ docker logs <container NAME or ID>
 *   To debug in case of download failure, add `--debug` flag. Not recommended if gdc-client download is working properly else this will increase write operations a lot!
 
 ```sh
-docker run -d -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGROUPID=10001 -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --debug --log-file=download.log -n 4 -t gdc_token.key -m controlled_manifest.tsv"
+docker run -d -e HOSTUSER=$USER -e HOSTGROUP=$(id -gn $USER) -e HOSTUSERID=$UID -e HOSTGROUPID=$(id -g $USER) -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --debug --log-file=download.log -n 4 -t gdc_token.key -m controlled_manifest.tsv"
 ```
 
 #### To parallelize downloads
 
 Instead of supplying download manifest, you can supply `analysis UUID`, i.e., first column value of the manifest, and run multiple (prefer not to run more than 2-3 on one compute node) docker instances using one the above two command for open or controlled access data, respectively.
 
+`gdc-docker-dn-x64-el6` is a bash wrapper to start per-sample (analysis UUID) docker download instance. It's not ready for release yet, but it formats following `docker run` command by taking a few user-supplied arguments.
+
+```sh
+docker run -d --name 1da7105a-f0ff-479d-9f82-6c1d94456c91 -e HOSTUSER=foo -e HOSTGROUP=staff -e HOSTUSERID=1000 -e HOSTGROUPID=1001 -v /fastscratch/foo/gdc:/scratch sbamin/gdc-client:1.3.0.b1 "gdc-client download --log-file=/scratch/docker_logs/docker_1da7105a-f0ff-479d-9f82-6c1d94456c91_22Apr18_124819EDT.log -n 8 -t gdc_token.key 1da7105a-f0ff-479d-9f82-6c1d94456c91"
+```
+
 #### manpage
 
 *   PS: Valid volume mounts are required (see below) before executing `gdc-client`
 
 ```sh
-docker run -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGROUPID=10001 -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --help"
+docker run -e HOSTUSER=$USER -e HOSTGROUP=$(id -gn $USER) -e HOSTUSERID=$UID -e HOSTGROUPID=$(id -g $USER) -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client download --help"
 
-docker run -e HOSTUSER=$USER -e HOSTGROUP=staff -e HOSTUSERID=$UID -e HOSTGROUPID=10001 -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client upload --help"
+docker run -e HOSTUSER=$USER -e HOSTGROUP=$(id -gn $USER) -e HOSTUSERID=$UID -e HOSTGROUPID=$(id -g $USER) -v "${USERMOUNT}":/scratch sbamin/gdc-client "gdc-client upload --help"
 ```
 
 END
