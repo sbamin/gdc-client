@@ -8,22 +8,28 @@ FROM	ubuntu:16.04
 ## For questions, visit https:
 MAINTAINER "Samir B. Amin" <tweet:sbamin; https://sbamin.com/contact>
 
-LABEL version="1.3.0" \
-	mode="gdc-client-1.3.0" \	
+LABEL version="1.3.0_75237be" \
+	mode="gdc-client-1.3.0_75237be" \
 	description="docker image to run NCI gdc-client" \
 	website="https://github.com/sbamin/gdc-client" \
-	issues="https://github.com/sbamin/gdc-client/issues"
+	issues="https://github.com/sbamin/gdc-client/issues" \
+	upstream_repo="https://github.com/NCI-GDC/gdc-client" \
+	upstream_branch="develop" \
+	upstream_commit="75237be04b827e8293c170462d37520200e55b06" \
+	upstream_lastmod="2018-03-29"	
 
 RUN	umask 0022 && apt-get update && \
-	apt-get install -y wget zip unzip rsync sudo
+	apt-get install -y wget zip unzip rsync sudo git python python-pip python-dev libxml2-dev libxslt1-dev zlib1g-dev build-essential
 
-RUN mkdir -p /opt/bin && \
-	chmod 755 /opt/bin && \
-	cd /opt/bin && \
-	wget https://gdc.cancer.gov/system/files/authenticated%20user/0/gdc-client_v1.3.0_Ubuntu14.04_x64.zip && \
-	unzip gdc-client_v1.3.0_Ubuntu14.04_x64.zip && \
-	chmod 755 gdc-client && \
-	rm -f gdc-client_v1.3.0_Ubuntu14.04_x64.zip
+RUN mkdir -p /opt && \
+	cd /opt && \
+	git clone https://github.com/NCI-GDC/gdc-client.git && \
+	cd gdc-client && \
+	git checkout develop && \
+	pip install -r requirements.txt && \
+	pip install -r dev-requirements.txt && \
+	python setup.py install && \
+	pip freeze
 
 ####### Setup non-root docker env #######
 ## copy setup files in the container ##
@@ -42,6 +48,7 @@ RUN ls -alh /tempdir/* && \
 	chmod 755 /etc/profile.d && \
 	rsync -avhP /tempdir/profile.d/ /etc/profile.d/ && \
 	chmod 755 /etc/profile.d/*.sh && \
+	mkdir -p /opt/bin && \
 	rsync -avhP /tempdir/bin/ /opt/bin/ && \
 	chmod 755 /opt/bin/startup && \
 	chmod 755 /opt/bin/userid_mapping.sh && \
